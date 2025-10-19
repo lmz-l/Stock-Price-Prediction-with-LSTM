@@ -1,0 +1,643 @@
+---
+title: "Untitled"
+format: pptx
+editor: visual
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = FALSE, results = 'hide')
+```
+
+
+
+```{r}
+library(quantmod)
+library(keras)
+tickers <- c("AAPL", "AMZN", "MSFT", "GOOGL", "META", "INTC", "NVDA", "TSLA")
+getSymbols(tickers, src = "yahoo", from = "2013-01-01", to = "2023-01-01")
+stock_data_AAPL <- AAPL
+stock_data_AMZN <- AMZN
+stock_data_MSFT <- MSFT
+stock_data_GOOGL <- GOOGL
+stock_data_META <- META
+stock_data_INTC <- INTC
+stock_data_NVDA <- NVDA
+stock_data_TSLA <- TSLA
+```
+## Apple
+```{r}
+# Select closing prices
+closing_prices <- stock_data_AAPL[, "AAPL.Close"]
+
+# Normalize
+max_price <- max(closing_prices)
+min_price <- min(closing_prices)
+scaled_data <- (closing_prices - min_price) / (max_price - min_price)
+
+# Create sequences
+window_size <- 20  # Can be adjusted
+data_gen <- function(data, window_size) {
+  xs <- list()
+  ys <- list()
+  for (i in 1:(length(data) - window_size)) {
+    xs[[i]] <- data[i:(i + window_size - 1)]
+    ys[[i]] <- data[i + window_size]
+  }
+  return(list(xs, ys))
+}
+train_data <- data_gen(scaled_data, window_size)
+
+```
+
+```{r}
+model <- keras_model_sequential() %>%
+  layer_lstm(units = 50, return_sequences = TRUE, input_shape = c(window_size, 1)) %>%
+  layer_lstm(units = 50) %>%
+  layer_dense(units = 1)
+
+model %>% compile(
+  optimizer = optimizer_adam(),
+  loss = 'mean_squared_error'
+)
+
+```
+
+```{r}
+x_train <- array_reshape(train_data[[1]], c(length(train_data[[1]]), window_size, 1))
+y_train <- unlist(train_data[[2]])
+
+history <- model %>% fit(
+  x_train, y_train,
+  epochs = 50,
+  batch_size = 32
+)
+
+```
+
+```{r}
+# Predict
+predictions <- model %>% predict(x_train)
+predictions <- predictions * (max_price - min_price) + min_price
+
+
+```
+
+```{r}
+# Extract the dates from the stock_data
+dates <- index(stock_data_AAPL)
+
+# Assuming predictions are fewer than closing_prices
+len_pred <- length(predictions)
+start_index <- length(closing_prices) - len_pred + 1
+prediction_dates <- dates[start_index:length(dates)]
+
+# Plot actual closing prices
+plot(dates, closing_prices, type = 'l', col = 'blue', main = 'Apple Stock Prices', xlab = 'Date', ylab = 'Price')
+
+# Add predicted prices
+lines(prediction_dates, predictions, col = 'red', type = 'l')
+
+
+```
+
+## Amazon
+
+```{r}
+# Select closing prices
+closing_prices <- stock_data_AMZN[, "AMZN.Close"]
+
+# Normalize
+max_price <- max(closing_prices)
+min_price <- min(closing_prices)
+scaled_data <- (closing_prices - min_price) / (max_price - min_price)
+
+# Create sequences
+window_size <- 20  # Can be adjusted
+data_gen <- function(data, window_size) {
+  xs <- list()
+  ys <- list()
+  for (i in 1:(length(data) - window_size)) {
+    xs[[i]] <- data[i:(i + window_size - 1)]
+    ys[[i]] <- data[i + window_size]
+  }
+  return(list(xs, ys))
+}
+train_data <- data_gen(scaled_data, window_size)
+
+```
+
+```{r}
+model <- keras_model_sequential() %>%
+  layer_lstm(units = 50, return_sequences = TRUE, input_shape = c(window_size, 1)) %>%
+  layer_lstm(units = 50) %>%
+  layer_dense(units = 1)
+
+model %>% compile(
+  optimizer = optimizer_adam(),
+  loss = 'mean_squared_error'
+)
+
+```
+
+```{r}
+x_train <- array_reshape(train_data[[1]], c(length(train_data[[1]]), window_size, 1))
+y_train <- unlist(train_data[[2]])
+
+history <- model %>% fit(
+  x_train, y_train,
+  epochs = 50,
+  batch_size = 32
+)
+
+```
+
+```{r}
+# Predict
+predictions <- model %>% predict(x_train)
+predictions <- predictions * (max_price - min_price) + min_price
+
+
+```
+
+```{r}
+# Extract the dates from the stock_data
+dates <- index(stock_data_AMZN)
+
+# Assuming predictions are fewer than closing_prices
+len_pred <- length(predictions)
+start_index <- length(closing_prices) - len_pred + 1
+prediction_dates <- dates[start_index:length(dates)]
+
+# Plot actual closing prices
+plot(dates, closing_prices, type = 'l', col = 'blue', main = 'Amazon Stock Prices', xlab = 'Date', ylab = 'Price')
+
+# Add predicted prices
+lines(prediction_dates, predictions, col = 'red', type = 'l')
+
+
+```
+
+## Microsoft
+
+```{r}
+# Select closing prices
+closing_prices <- stock_data_MSFT[, "MSFT.Close"]
+
+# Normalize
+max_price <- max(closing_prices)
+min_price <- min(closing_prices)
+scaled_data <- (closing_prices - min_price) / (max_price - min_price)
+
+# Create sequences
+window_size <- 20  # Can be adjusted
+data_gen <- function(data, window_size) {
+  xs <- list()
+  ys <- list()
+  for (i in 1:(length(data) - window_size)) {
+    xs[[i]] <- data[i:(i + window_size - 1)]
+    ys[[i]] <- data[i + window_size]
+  }
+  return(list(xs, ys))
+}
+train_data <- data_gen(scaled_data, window_size)
+
+```
+
+```{r}
+model <- keras_model_sequential() %>%
+  layer_lstm(units = 50, return_sequences = TRUE, input_shape = c(window_size, 1)) %>%
+  layer_lstm(units = 50) %>%
+  layer_dense(units = 1)
+
+model %>% compile(
+  optimizer = optimizer_adam(),
+  loss = 'mean_squared_error'
+)
+
+```
+
+```{r}
+x_train <- array_reshape(train_data[[1]], c(length(train_data[[1]]), window_size, 1))
+y_train <- unlist(train_data[[2]])
+
+history <- model %>% fit(
+  x_train, y_train,
+  epochs = 50,
+  batch_size = 32
+)
+
+```
+
+```{r}
+# Predict
+predictions <- model %>% predict(x_train)
+predictions <- predictions * (max_price - min_price) + min_price
+
+# Compare predictions with actual values
+#plot(closing_prices, type = 'l')
+#lines(predictions, col = 'red', type = 'l')
+
+```
+
+```{r}
+# Extract the dates from the stock_data
+dates <- index(stock_data_MSFT)
+
+# Assuming predictions are fewer than closing_prices
+len_pred <- length(predictions)
+start_index <- length(closing_prices) - len_pred + 1
+prediction_dates <- dates[start_index:length(dates)]
+
+# Plot actual closing prices
+plot(dates, closing_prices, type = 'l', col = 'blue', main = 'Microsoft Stock Prices', xlab = 'Date', ylab = 'Price')
+
+# Add predicted prices
+lines(prediction_dates, predictions, col = 'red', type = 'l')
+
+
+```
+
+## Google
+
+```{r}
+# Select closing prices
+closing_prices <- stock_data_GOOGL[, "GOOGL.Close"]
+
+# Normalize
+max_price <- max(closing_prices)
+min_price <- min(closing_prices)
+scaled_data <- (closing_prices - min_price) / (max_price - min_price)
+
+# Create sequences
+window_size <- 20  # Can be adjusted
+data_gen <- function(data, window_size) {
+  xs <- list()
+  ys <- list()
+  for (i in 1:(length(data) - window_size)) {
+    xs[[i]] <- data[i:(i + window_size - 1)]
+    ys[[i]] <- data[i + window_size]
+  }
+  return(list(xs, ys))
+}
+train_data <- data_gen(scaled_data, window_size)
+
+```
+
+```{r}
+model <- keras_model_sequential() %>%
+  layer_lstm(units = 50, return_sequences = TRUE, input_shape = c(window_size, 1)) %>%
+  layer_lstm(units = 50) %>%
+  layer_dense(units = 1)
+
+model %>% compile(
+  optimizer = optimizer_adam(),
+  loss = 'mean_squared_error'
+)
+
+```
+
+```{r}
+x_train <- array_reshape(train_data[[1]], c(length(train_data[[1]]), window_size, 1))
+y_train <- unlist(train_data[[2]])
+
+history <- model %>% fit(
+  x_train, y_train,
+  epochs = 50,
+  batch_size = 32
+)
+
+```
+
+```{r}
+# Predict
+predictions <- model %>% predict(x_train)
+predictions <- predictions * (max_price - min_price) + min_price
+
+```
+
+```{r}
+# Extract the dates from the stock_data
+dates <- index(stock_data_GOOGL)
+
+# Assuming predictions are fewer than closing_prices
+len_pred <- length(predictions)
+start_index <- length(closing_prices) - len_pred + 1
+prediction_dates <- dates[start_index:length(dates)]
+
+# Plot actual closing prices
+plot(dates, closing_prices, type = 'l', col = 'blue', main = 'Google Stock Prices', xlab = 'Date', ylab = 'Price')
+
+# Add predicted prices
+lines(prediction_dates, predictions, col = 'red', type = 'l')
+
+
+```
+
+## Meta
+
+```{r}
+# Select closing prices
+closing_prices <- stock_data_META[, "META.Close"]
+
+# Normalize
+max_price <- max(closing_prices)
+min_price <- min(closing_prices)
+scaled_data <- (closing_prices - min_price) / (max_price - min_price)
+
+# Create sequences
+window_size <- 20  # Can be adjusted
+data_gen <- function(data, window_size) {
+  xs <- list()
+  ys <- list()
+  for (i in 1:(length(data) - window_size)) {
+    xs[[i]] <- data[i:(i + window_size - 1)]
+    ys[[i]] <- data[i + window_size]
+  }
+  return(list(xs, ys))
+}
+train_data <- data_gen(scaled_data, window_size)
+
+```
+
+```{r}
+model <- keras_model_sequential() %>%
+  layer_lstm(units = 50, return_sequences = TRUE, input_shape = c(window_size, 1)) %>%
+  layer_lstm(units = 50) %>%
+  layer_dense(units = 1)
+
+model %>% compile(
+  optimizer = optimizer_adam(),
+  loss = 'mean_squared_error'
+)
+
+```
+
+```{r}
+x_train <- array_reshape(train_data[[1]], c(length(train_data[[1]]), window_size, 1))
+y_train <- unlist(train_data[[2]])
+
+history <- model %>% fit(
+  x_train, y_train,
+  epochs = 50,
+  batch_size = 32
+)
+
+```
+
+```{r}
+# Predict
+predictions <- model %>% predict(x_train)
+predictions <- predictions * (max_price - min_price) + min_price
+
+
+```
+
+```{r}
+# Extract the dates from the stock_data
+dates <- index(stock_data_META)
+
+# Assuming predictions are fewer than closing_prices
+len_pred <- length(predictions)
+start_index <- length(closing_prices) - len_pred + 1
+prediction_dates <- dates[start_index:length(dates)]
+
+# Plot actual closing prices
+plot(dates, closing_prices, type = 'l', col = 'blue', main = 'Meta Stock Prices', xlab = 'Date', ylab = 'Price')
+
+# Add predicted prices
+lines(prediction_dates, predictions, col = 'red', type = 'l')
+
+
+```
+
+## Intel
+
+```{r}
+# Select closing prices
+closing_prices <- stock_data_INTC[, "INTC.Close"]
+
+# Normalize
+max_price <- max(closing_prices)
+min_price <- min(closing_prices)
+scaled_data <- (closing_prices - min_price) / (max_price - min_price)
+
+# Create sequences
+window_size <- 20  # Can be adjusted
+data_gen <- function(data, window_size) {
+  xs <- list()
+  ys <- list()
+  for (i in 1:(length(data) - window_size)) {
+    xs[[i]] <- data[i:(i + window_size - 1)]
+    ys[[i]] <- data[i + window_size]
+  }
+  return(list(xs, ys))
+}
+train_data <- data_gen(scaled_data, window_size)
+
+```
+
+```{r}
+model <- keras_model_sequential() %>%
+  layer_lstm(units = 50, return_sequences = TRUE, input_shape = c(window_size, 1)) %>%
+  layer_lstm(units = 50) %>%
+  layer_dense(units = 1)
+
+model %>% compile(
+  optimizer = optimizer_adam(),
+  loss = 'mean_squared_error'
+)
+
+```
+
+```{r}
+x_train <- array_reshape(train_data[[1]], c(length(train_data[[1]]), window_size, 1))
+y_train <- unlist(train_data[[2]])
+
+history <- model %>% fit(
+  x_train, y_train,
+  epochs = 50,
+  batch_size = 32
+)
+
+```
+
+```{r}
+# Predict
+predictions <- model %>% predict(x_train)
+predictions <- predictions * (max_price - min_price) + min_price
+
+
+```
+
+```{r}
+# Extract the dates from the stock_data
+dates <- index(stock_data_INTC)
+
+# Assuming predictions are fewer than closing_prices
+len_pred <- length(predictions)
+start_index <- length(closing_prices) - len_pred + 1
+prediction_dates <- dates[start_index:length(dates)]
+
+# Plot actual closing prices
+plot(dates, closing_prices, type = 'l', col = 'blue', main = 'Intel Stock Prices', xlab = 'Date', ylab = 'Price')
+
+# Add predicted prices
+lines(prediction_dates, predictions, col = 'red', type = 'l')
+
+
+```
+
+## Nvidia
+
+```{r}
+# Select closing prices
+closing_prices <- stock_data_NVDA[, "NVDA.Close"]
+
+# Normalize
+max_price <- max(closing_prices)
+min_price <- min(closing_prices)
+scaled_data <- (closing_prices - min_price) / (max_price - min_price)
+
+# Create sequences
+window_size <- 20  # Can be adjusted
+data_gen <- function(data, window_size) {
+  xs <- list()
+  ys <- list()
+  for (i in 1:(length(data) - window_size)) {
+    xs[[i]] <- data[i:(i + window_size - 1)]
+    ys[[i]] <- data[i + window_size]
+  }
+  return(list(xs, ys))
+}
+train_data <- data_gen(scaled_data, window_size)
+
+```
+
+```{r}
+model <- keras_model_sequential() %>%
+  layer_lstm(units = 50, return_sequences = TRUE, input_shape = c(window_size, 1)) %>%
+  layer_lstm(units = 50) %>%
+  layer_dense(units = 1)
+
+model %>% compile(
+  optimizer = optimizer_adam(),
+  loss = 'mean_squared_error'
+)
+
+```
+
+```{r}
+x_train <- array_reshape(train_data[[1]], c(length(train_data[[1]]), window_size, 1))
+y_train <- unlist(train_data[[2]])
+
+history <- model %>% fit(
+  x_train, y_train,
+  epochs = 50,
+  batch_size = 32
+)
+
+```
+
+```{r}
+# Predict
+predictions <- model %>% predict(x_train)
+predictions <- predictions * (max_price - min_price) + min_price
+
+
+
+```
+
+```{r}
+# Extract the dates from the stock_data
+dates <- index(stock_data_NVDA)
+
+# Assuming predictions are fewer than closing_prices
+len_pred <- length(predictions)
+start_index <- length(closing_prices) - len_pred + 1
+prediction_dates <- dates[start_index:length(dates)]
+
+# Plot actual closing prices
+plot(dates, closing_prices, type = 'l', col = 'blue', main = 'Nvidia Stock Prices', xlab = 'Date', ylab = 'Price')
+
+# Add predicted prices
+lines(prediction_dates, predictions, col = 'red', type = 'l')
+
+
+```
+
+## Tesla
+
+```{r}
+# Select closing prices
+closing_prices <- stock_data_TSLA[, "TSLA.Close"]
+
+# Normalize
+max_price <- max(closing_prices)
+min_price <- min(closing_prices)
+scaled_data <- (closing_prices - min_price) / (max_price - min_price)
+
+# Create sequences
+window_size <- 20  # Can be adjusted
+data_gen <- function(data, window_size) {
+  xs <- list()
+  ys <- list()
+  for (i in 1:(length(data) - window_size)) {
+    xs[[i]] <- data[i:(i + window_size - 1)]
+    ys[[i]] <- data[i + window_size]
+  }
+  return(list(xs, ys))
+}
+train_data <- data_gen(scaled_data, window_size)
+
+```
+
+```{r}
+model <- keras_model_sequential() %>%
+  layer_lstm(units = 50, return_sequences = TRUE, input_shape = c(window_size, 1)) %>%
+  layer_lstm(units = 50) %>%
+  layer_dense(units = 1)
+
+model %>% compile(
+  optimizer = optimizer_adam(),
+  loss = 'mean_squared_error'
+)
+
+```
+
+```{r}
+x_train <- array_reshape(train_data[[1]], c(length(train_data[[1]]), window_size, 1))
+y_train <- unlist(train_data[[2]])
+
+history <- model %>% fit(
+  x_train, y_train,
+  epochs = 50,
+  batch_size = 32
+)
+
+```
+
+```{r}
+# Predict
+predictions <- model %>% predict(x_train)
+predictions <- predictions * (max_price - min_price) + min_price
+
+
+```
+
+```{r}
+# Extract the dates from the stock_data
+dates <- index(stock_data_TSLA)
+
+# Assuming predictions are fewer than closing_prices
+len_pred <- length(predictions)
+start_index <- length(closing_prices) - len_pred + 1
+prediction_dates <- dates[start_index:length(dates)]
+
+# Plot actual closing prices
+plot(dates, closing_prices, type = 'l', col = 'blue', main = 'Tesla Stock Prices', xlab = 'Date', ylab = 'Price')
+
+# Add predicted prices
+lines(prediction_dates, predictions, col = 'red', type = 'l')
+
+
+```
